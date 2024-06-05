@@ -1,0 +1,73 @@
+﻿@using BookStore.ViewModel
+@model List<BookVM>
+
+@section Title {
+    Book
+}
+@section subTitle {
+    show
+}
+@section Butons {
+    <a asp-controller="Books" asp-action="Create" class="btn btn-primary ">Create</a>
+}
+@if (!Model.Any())
+{
+    <div class="card-body">
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <h5><i class="icon fas fa-exclamation-triangle"></i> Error!</h5>
+            Data source is null.
+        </div>
+    </div>
+
+}
+else
+{
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th style="width: 10px">#</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>publisher</th>
+                    <th>publisher</th>
+                    <th>publish Data</th>
+                    <th>Image</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in @Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Title</td>
+                        <td>@item.Author</td>
+                        <td>@item.Publisher</td>
+                        <td>@item.publishData</td>
+                        <td><img src="~/img/books/@item.ImageUrl" width="50px" /></td>
+                        <td>@string.Join(",",item.Categories)</td>
+                        <td>
+                            <a class="btn btn-dark" asp-controller="Books" asp-action="Edit" asp-route-id="@item.Id">
+                                <i class="fas fa-edit"></i>
+                                Edit
+                            </a>
+                            <a class="btn btn-info" asp-controller="Books" asp-action="Details" asp-route-id="@item.Id">
+                                <i class="fas fa-question-circle" style="color: #ea0b0b;"></i>
+                                Details
+                            </a>
+                            <a class="btn btn-danger js-delete" data-id="@item.Id" href="#">
+                                <i class="fas fa-user-slash" style="color: #FFD43B;"></i>
+                                Delete
+                            </a>
+
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+}

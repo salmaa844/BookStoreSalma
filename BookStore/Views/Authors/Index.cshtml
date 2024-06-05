@@ -1,0 +1,130 @@
+﻿@using BookStore.ViewModel
+@model List<AuthorVM>
+@section Title {
+    Authors
+}
+@section subTitle {
+    show
+}
+@section Butons {
+    <a asp-controller="Authors" asp-action="Form" class="btn btn-primary ">Create</a>
+}
+@if (!Model.Any())
+{
+    <div class="card-body">
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <h5><i class="icon fas fa-exclamation-triangle"></i> Error!</h5>
+            Data source is null.
+        </div>
+    </div>
+
+}
+
+else
+{
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th style="width: 10px">#</th>
+                    <th>Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Name</td>
+                        <td>
+                            <a class="btn btn-dark" asp-controller="Authors" asp-action="Edit" asp-route-id="@item.Id">
+                                <i class="fas fa-edit"></i>
+                                Edit
+                            </a>
+                            <a class="btn btn-info" asp-controller="Authors" asp-action="Details" asp-route-id="@item.Id">
+                                <i class="fas fa-question-circle" style="color: #ea0b0b;"></i>
+                                Details
+                            </a>
+                            <a class="btn btn-danger js-delete" data-id="@item.Id" href="#">
+                                <i class="fas fa-user-slash" style="color:#FFD43B;"></i>
+                                Delete
+                            </a>
+
+                        </td>
+                    </tr>
+                }
+
+
+            </tbody>
+        </table>
+    </div>
+}
+@section Scripts {
+    <script>
+
+        document.querySelectorAll(".js-delete").forEach((btn) => {
+            btn.addEventListener("click", async () => {
+
+                const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                        confirmButton: "btn btn-success",
+                        cancelButton: "btn btn-danger"
+                    },
+                    buttonsStyling: false
+                });
+                swalWithBootstrapButtons.fire({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, delete it!",
+                    cancelButtonText: "No, cancel!",
+                    reverseButtons: true
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+
+                        const id = btn.dataset.id;
+
+                        const response = await fetch(`/Category/Delete/${id}`, {
+                            method: 'POST'
+
+                        });
+                        if (response.ok) {
+                            btn.closest("tr").remove();
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: 'top-end',
+                                iconColor: 'red',
+                                customClass: {
+                                    popup: 'colored-toast',
+                                },
+                                showConfirmButton: false,
+                                timer: 1500,
+                                timerProgressBar: true,
+                            })
+                            await Toast.fire({
+                                icon: 'success',
+                                title: 'Category Deleted Succesfully',
+                            })
+                        }
+
+                    } else if (
+                        /* Read more about handling dismissals below */
+                        result.dismiss === Swal.DismissReason.cancel
+                    ) {
+                        swalWithBootstrapButtons.fire({
+                            title: "Cancelled",
+                            text: "Your imaginary file is safe :)",
+                            icon: "error"
+                        });
+                    }
+                });
+
+            });
+        })
+    </script>
+}
